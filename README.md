@@ -3,5 +3,5 @@
  Members  
  - 최원빈 (Won Bin Choi)
  - 정구열 (Gu Yeol Jeong )
- - 허주혁 ( )
+ - 허주혁 (Joo Hyeok Heo )
  - 김희성 (Hee Sung Kim)
