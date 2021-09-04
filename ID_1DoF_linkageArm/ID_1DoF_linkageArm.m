@@ -6,10 +6,10 @@
 close all; clear; clc;
 
 %% Variable Initilization
-Tfinal = 2;    % Time range (sec)
+Tfinal = 2;     % Time range (sec)
 T = 0.001;      % Sampling time (sec)
 t = 0:T:Tfinal; % Time
-N = length(t);   % Number of data
+N = length(t);  % Number of data
 % Physical Properties
 L = 0.65; % Length of arm
 M = 0.0;  % Mass of arm
@@ -47,6 +47,8 @@ for k=1:N
 end
 
 %% Simulator
+disp("Sampling Time: " + T + " seconds, Sampling Frequency " + 1/T + " Hz");
+disp("Run time: " + Tfinal + " seconds");
 figure('color','w');
 frame = 10;
 for k = 1:frame:N
