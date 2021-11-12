@@ -9,7 +9,9 @@ int sensorValue = 0;
 int outputValue = 0;
 
 void setup(){
-  motor.drive(-360, 250); // Spin Angle, Step Time (= Velocity)
+  motor.calibrate(); // Automatically set the velocity coefficient
+  delay(1000);
+  motor.drive(-360, 120); // Spin Angle, Step Time (= timeStep)
   delay(1000);
 }
 
@@ -23,7 +25,7 @@ void loop(){
   // Check value change
   if (oldValue != outputValue){
     // Give incremental drive
-    motor.drive(outputValue - oldValue, 250);
+    motor.drive(outputValue - oldValue, 120);
   }
   oldValue = outputValue; // Get old value
   delay(1); 
