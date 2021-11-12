@@ -15,6 +15,10 @@
       : Added velocity coefficient for processor adjustment
       : Took out the iteration number outside the loop initilization of the drive() function
       : Added a calibration function for setting the velocity constant
+    > v 1.2.0 (Nov. 12, 2021)
+      : Updated the calibration function so it can calibrate by the millisecond unit
+      : Changed the interpolation order from first to second
+      
 */
 // file: stepper.h
 #if defined(ARDUINO) && ARDUINO >= 100
@@ -24,7 +28,7 @@
 #endif
 
 #define DEBUG true
-#define ALLOWED_TIME_ERROR 0 // microsecond
+#define ALLOWED_TIME_ERROR 100 // microsecond
 
 class stepper
 {
@@ -34,13 +38,11 @@ class stepper
     int stepsPerRevolution;
     int timeStep;
     int iteration;
-    float velocity_coefficient = 1.0; 
-    float velocity_coefficient_p = 0; 
+    double velocity_coefficient[3] = {0, 0, 1};
     // Motor rotation speed may change depending on the MCU speed.
     long firstTick = 0;
     long secondTick = 0;
-    long currentInterval = 0;
-    long pastInterval = 0;
+    double interval[3] = {};
   public:
     stepper(const int _dirPin, const int _stepPin, int _stepsPerRevolution);
     ~stepper();

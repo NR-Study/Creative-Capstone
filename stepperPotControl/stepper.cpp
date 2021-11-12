@@ -22,7 +22,7 @@ stepper::~stepper()
 
 void stepper::drive(int angle, float _rpm)
 {
-  timeStep = int(60.0/(float(stepsPerRevolution)*pow(10,-6)*_rpm*velocity_coefficient)); // RPM to time step
+  timeStep = int(60.0/(float(stepsPerRevolution)*pow(10,-6)*_rpm*velocity_coefficient[2])); // RPM to time step
   
   if(angle > 0) {
     digitalWrite(dirPin, HIGH);
@@ -43,21 +43,31 @@ void stepper::drive(int angle, float _rpm)
 void stepper::calibrate()
 {
   float calibrationSpeed = 36;
-  firstTick = millis();
-  drive(calibrationSpeed, 60);
-  secondTick = millis();
-  pastInterval = secondTick - firstTick;
+  float targetTime = calibrationSpeed/360.0 * pow(10,6);
 
-  velocity_coefficient_p = velocity_coefficient;
-  velocity_coefficient *= 4.0;
+  firstTick = micros();
+  drive(calibrationSpeed, 60);
+  secondTick = micros();
+  interval[0] = secondTick - firstTick;
+  
+  velocity_coefficient[0] = velocity_coefficient[2];
+  velocity_coefficient[2] *= 2.0;
+  firstTick = micros();
+  drive(calibrationSpeed, 60);
+  secondTick = micros();
+  interval[1] = secondTick - firstTick;
+
+  velocity_coefficient[1] = velocity_coefficient[2];
+  velocity_coefficient[2] *= 2.0;
   while(true){
-    firstTick = millis();
+    firstTick = micros();
     drive(calibrationSpeed, 60);
-    secondTick = millis();
-    currentInterval = secondTick - firstTick;
-    if (currentInterval == calibrationSpeed/360.0 * pow(10,3)) {
+    secondTick = micros();
+    interval[2] = secondTick - firstTick;
+    Serial.println(interval[2]);
+    if (abs(interval[2] - targetTime) < ALLOWED_TIME_ERROR) {
       break;
     }
-    velocity_coefficient = float( (currentInterval * velocity_coefficient_p - pastInterval * velocity_coefficient + calibrationSpeed/360.0 * pow(10,3) * ( velocity_coefficient - velocity_coefficient_p ) ) ) / float(currentInterval - pastInterval);
+    velocity_coefficient[2] = ( ( ((targetTime - interval[1]))*((targetTime - interval[2])) ) / ( ((interval[0] - interval[1]))*((interval[0] - interval[2])) ) )* velocity_coefficient[0] + ( ( ((targetTime - interval[0]))*((targetTime - interval[2])) ) / ( ((interval[1] - interval[0]))*((interval[1] - interval[2])) ) )* velocity_coefficient[1] + ( ( ((targetTime - interval[0]))*((targetTime - interval[1])) ) / ( ((interval[2] - interval[0]))*((interval[2] - interval[1])) ) )* velocity_coefficient[2];
   }
 }
