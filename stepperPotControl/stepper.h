@@ -22,6 +22,10 @@
       : Updated the calibration function so it can calibrate without moving the stepper motor
     > v 1.3.1 (Nov. 13, 2021)
       : Integrated the calibration function to the constructor
+    > v 1.3.2 (Nov. 13, 2021)
+      : Constructor integration of the calibration doesn't seem to work. Ommited temporarily and put it in the setup()
+      : Change the interpolation variable to the center value
+      
       
 */
 // file: stepper.h
@@ -32,7 +36,7 @@
 #endif
 
 #define DEBUG true
-#define ALLOWED_TIME_ERROR 100 // microsecond
+#define ALLOWED_TIME_ERROR 50 // microsecond
 
 class stepper
 {
@@ -40,9 +44,9 @@ class stepper
     const int dirPin;
     const int stepPin;
     int stepsPerRevolution;
-    int timeStep;
+    long timeStep;
     int iteration;
-    double velocity_coefficient[3] = {0, 0, 1};
+    double velocity_coefficient[3] = {0, 1, 0};
     // Motor rotation speed may change depending on the MCU speed.
     long firstTick = 0;
     long secondTick = 0;
