@@ -20,6 +20,8 @@
       : Changed the interpolation order from first to second
     > v 1.3.0 (Nov. 13, 2021)
       : Updated the calibration function so it can calibrate without moving the stepper motor
+    > v 1.3.1 (Nov. 13, 2021)
+      : Integrated the calibration function to the constructor
       
 */
 // file: stepper.h

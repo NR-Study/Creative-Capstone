@@ -13,6 +13,7 @@ stepper::stepper(const int _dirPin, const int _stepPin, int _stepsPerRevolution)
 {
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
+  calibrate(); // Automatically set the velocity coefficient
 }
 
 stepper::~stepper()
