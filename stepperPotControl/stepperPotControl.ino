@@ -11,10 +11,7 @@ int outputValue = 0;
 void setup(){
   Serial.begin(9600);
   
-  motor.drive(-360, 60); // Spin Angle, Step Time (= timeStep)
-  Serial.println(millis() - sensorValue);
-  delay(1000);
-  motor.calibrate(); // Automatically set the velocity coefficient
+  motor.begin(); // Initiate stepper motor
   sensorValue = millis();
   motor.drive(-360, 60); // Spin Angle, Step Time (= timeStep)
   Serial.println(millis() - sensorValue);

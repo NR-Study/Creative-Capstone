@@ -6,13 +6,13 @@
   Date: November 12, 2021
 */
 // file: stepper.cpp
+#include "Arduino.h"
 #include "stepper.h"
 
 stepper::stepper(const int _dirPin, const int _stepPin, int _stepsPerRevolution)
   : dirPin(_dirPin), stepPin(_stepPin), stepsPerRevolution(_stepsPerRevolution)
 {
-  pinMode(stepPin, OUTPUT);
-  pinMode(dirPin, OUTPUT);
+  
 }
 
 stepper::~stepper()
@@ -40,17 +40,25 @@ void stepper::drive(int angle, float _rpm)
   }
 }
 
-void stepper::drive(int angle)
+void stepper::begin()
 {
-  timeStep = int(60.0 / (float(stepsPerRevolution) * pow(10, -6) * 60 * velocity_coefficient[1])); // RPM to time step (Calibrate to 60 RPM)
+  pinMode(dirPin, OUTPUT);
+  pinMode(stepPin, OUTPUT);
+  calibrate();
+}
 
+void stepper::drive(int angle)
+{  
+  timeStep = int(60.0 / (float(stepsPerRevolution) * pow(10, -6) * 60 * velocity_coefficient[1])); // RPM to time step (Calibrate to 60 RPM)
+  
   digitalWrite(dirPin, LOW);
 
   iteration = int(float(stepsPerRevolution) * float(abs(angle)) / 360.0);
-
   for (int i = 0; i < iteration * 2; i ++) {
+    digitalWrite(13, HIGH);
     digitalWrite(stepPin, LOW);
     delayMicroseconds(timeStep);
+    digitalWrite(13, LOW);
   }
 }
 
@@ -58,7 +66,7 @@ void stepper::calibrate()
 {
   float calibrationSpeed = 36;
   float targetTime = calibrationSpeed / 360.0 * pow(10, 6);
-
+  
   firstTick = micros();
   drive(calibrationSpeed);
   secondTick = micros();
@@ -78,7 +86,7 @@ void stepper::calibrate()
     drive(calibrationSpeed);
     secondTick = micros();
     interval[1] = secondTick - firstTick;
-    //Serial.println(interval[1]);
+    //Serial.println("Vc: " + String(velocity_coefficient[1],5) + "\t t: " + String(interval[1],0));
     if (abs(interval[1] - targetTime) < ALLOWED_TIME_ERROR) {
       break;
     }

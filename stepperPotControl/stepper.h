@@ -25,18 +25,20 @@
     > v 1.3.2 (Nov. 13, 2021)
       : Constructor integration of the calibration doesn't seem to work. Ommited temporarily and put it in the setup()
       : Change the interpolation variable to the center value
+    > v 1.4.0 (Nov. 13, 2021)
+      : There seems to be limited functions that are allowed to be used in the constructor. Therefore, the motor will be initilized using the begin()
+      : Pin mode setup and calibrate() is moved to the begin() from the constructor
+      : calibrate() and drive() overload is set to private
       
       
 */
 // file: stepper.h
-#if defined(ARDUINO) && ARDUINO >= 100
-  #include "arduino.h"
-#else
-  #include "WProgram.h"
-#endif
+#ifndef Morse_h
+#define Morse_h
+#include "Arduino.h"
 
 #define DEBUG true
-#define ALLOWED_TIME_ERROR 50 // microsecond
+#define ALLOWED_TIME_ERROR 100 // microsecond
 
 class stepper
 {
@@ -51,11 +53,14 @@ class stepper
     long firstTick = 0;
     long secondTick = 0;
     double interval[3] = {};
+    
+    void calibrate();
+    void drive(int angle);
   public:
     stepper(const int _dirPin, const int _stepPin, int _stepsPerRevolution);
     ~stepper();
 
+    void begin();
     void drive(int angle, float _rpm);
-    void drive(int angle);
-    void calibrate();
 };
+#endif
