@@ -18,6 +18,8 @@
     > v 1.2.0 (Nov. 12, 2021)
       : Updated the calibration function so it can calibrate by the millisecond unit
       : Changed the interpolation order from first to second
+    > v 1.3.0 (Nov. 13, 2021)
+      : Updated the calibration function so it can calibrate without moving the stepper motor
       
 */
 // file: stepper.h
@@ -48,5 +50,6 @@ class stepper
     ~stepper();
 
     void drive(int angle, float _rpm);
+    void drive(int angle);
     void calibrate();
 };

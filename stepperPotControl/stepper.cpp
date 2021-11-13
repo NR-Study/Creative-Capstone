@@ -40,20 +40,34 @@ void stepper::drive(int angle, float _rpm)
   }
 }
 
+void stepper::drive(int angle)
+{
+  timeStep = int(60.0/(float(stepsPerRevolution)*pow(10,-6)*60*velocity_coefficient[2])); // RPM to time step (Calibrate to 60 RPM)
+  
+  digitalWrite(dirPin, LOW);
+  
+  iteration = int(float(stepsPerRevolution) * float(abs(angle))/360.0);
+    
+  for(int i = 0; i < iteration*2; i ++){
+    digitalWrite(stepPin, LOW);
+    delayMicroseconds(timeStep);
+  }
+}
+
 void stepper::calibrate()
 {
   float calibrationSpeed = 36;
   float targetTime = calibrationSpeed/360.0 * pow(10,6);
 
   firstTick = micros();
-  drive(calibrationSpeed, 60);
+  drive(calibrationSpeed);
   secondTick = micros();
   interval[0] = secondTick - firstTick;
   
   velocity_coefficient[0] = velocity_coefficient[2];
   velocity_coefficient[2] *= 2.0;
   firstTick = micros();
-  drive(calibrationSpeed, 60);
+  drive(calibrationSpeed);
   secondTick = micros();
   interval[1] = secondTick - firstTick;
 
@@ -61,10 +75,10 @@ void stepper::calibrate()
   velocity_coefficient[2] *= 2.0;
   while(true){
     firstTick = micros();
-    drive(calibrationSpeed, 60);
+    drive(calibrationSpeed);
     secondTick = micros();
     interval[2] = secondTick - firstTick;
-    Serial.println(interval[2]);
+    //Serial.println(interval[2]);
     if (abs(interval[2] - targetTime) < ALLOWED_TIME_ERROR) {
       break;
     }
