@@ -13,7 +13,7 @@
       : Added a conversion command to change from rpm to time step
       : Added DEBUG definition for debugging
       : Added velocity coefficient for processor adjustment
-      : Took out the iteration number outside the loop initilization of the drive() function
+      : Took out the iteration number outside the loop initialization of the drive() function
       : Added a calibration function for setting the velocity constant
     > v 1.2.0 (Nov. 12, 2021)
       : Updated the calibration function so it can calibrate by the millisecond unit
