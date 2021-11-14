@@ -12,7 +12,7 @@
 stepper::stepper(const int _dirPin, const int _stepPin, int _stepsPerRevolution)
   : dirPin(_dirPin), stepPin(_stepPin), stepsPerRevolution(_stepsPerRevolution)
 {
-  
+
 }
 
 stepper::~stepper()
@@ -40,6 +40,29 @@ void stepper::drive(int angle, float _rpm)
   }
 }
 
+void stepper::drive_s(int angle, float _rpm, int _touchPin)
+{
+  timeStep = int(60.0 / (float(stepsPerRevolution) * pow(10, -6) * _rpm * velocity_coefficient[1])); // RPM to time step
+  pinMode(_touchPin, INPUT);
+  
+  if (angle > 0) {
+    digitalWrite(dirPin, HIGH);
+  } else {
+    digitalWrite(dirPin, LOW);
+  }
+
+  iteration = int(float(stepsPerRevolution) * float(abs(angle)) / 360.0);
+
+  for (int i = 0; i < iteration; i ++) {
+    if (!(digitalRead(_touchPin))) {
+      digitalWrite(stepPin, HIGH);
+      delayMicroseconds(timeStep);
+      digitalWrite(stepPin, LOW);
+      delayMicroseconds(timeStep);
+    }
+  }
+}
+
 void stepper::begin()
 {
   pinMode(dirPin, OUTPUT);
@@ -48,17 +71,15 @@ void stepper::begin()
 }
 
 void stepper::drive(int angle)
-{  
+{
   timeStep = int(60.0 / (float(stepsPerRevolution) * pow(10, -6) * 60 * velocity_coefficient[1])); // RPM to time step (Calibrate to 60 RPM)
-  
+
   digitalWrite(dirPin, LOW);
 
   iteration = int(float(stepsPerRevolution) * float(abs(angle)) / 360.0);
   for (int i = 0; i < iteration * 2; i ++) {
-    digitalWrite(13, HIGH);
     digitalWrite(stepPin, LOW);
     delayMicroseconds(timeStep);
-    digitalWrite(13, LOW);
   }
 }
 
@@ -66,7 +87,7 @@ void stepper::calibrate()
 {
   float calibrationSpeed = 36;
   float targetTime = calibrationSpeed / 360.0 * pow(10, 6);
-  
+
   firstTick = micros();
   drive(calibrationSpeed);
   secondTick = micros();

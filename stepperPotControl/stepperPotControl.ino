@@ -13,7 +13,7 @@ void setup(){
   
   motor.begin(); // Initiate stepper motor
   sensorValue = millis();
-  motor.drive(-360, 60); // Spin Angle, Step Time (= timeStep)
+  motor.drive_s(-360, 60, 7); // Spin Angle, Step Time (= timeStep)
   Serial.println(millis() - sensorValue);
   delay(1000);
 }

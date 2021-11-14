@@ -29,6 +29,8 @@
       : There seems to be limited functions that are allowed to be used in the constructor. Therefore, the motor will be initilized using the begin()
       : Pin mode setup and calibrate() is moved to the begin() from the constructor
       : calibrate() and drive() overload is set to private
+    > v 1.5.0 (Nov. 14, 2021)
+      : Added drive_s() which utilizes the push button to check the initial stepper position
       
       
 */
@@ -62,5 +64,6 @@ class stepper
 
     void begin();
     void drive(int angle, float _rpm);
+    void drive_s(int angle, float _rpm, int _touchPin);
 };
 #endif
