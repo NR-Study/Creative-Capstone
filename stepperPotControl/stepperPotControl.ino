@@ -9,7 +9,12 @@ int sensorValue = 0;
 int outputValue = 0;
 
 void setup(){
-  motor.drive(-360, 250); // Spin Angle, Step Time (= Velocity)
+  Serial.begin(9600);
+  
+  motor.begin(); // Initiate stepper motor
+  sensorValue = millis();
+  motor.drive_s(-360, 60, 7); // Spin Angle, Step Time (= timeStep)
+  Serial.println(millis() - sensorValue);
   delay(1000);
 }
 
@@ -23,7 +28,7 @@ void loop(){
   // Check value change
   if (oldValue != outputValue){
     // Give incremental drive
-    motor.drive(outputValue - oldValue, 250);
+    motor.drive(outputValue - oldValue, 120);
   }
   oldValue = outputValue; // Get old value
   delay(1); 
