@@ -34,9 +34,9 @@ void stepper::drive(int angle, float _rpm)
 
   for (int i = 0; i < iteration; i ++) {
     digitalWrite(stepPin, HIGH);
-    delayMicroseconds(timeStep);
+    delayMicroseconds(int(double(timeStep)/2.0));
     digitalWrite(stepPin, LOW);
-    delayMicroseconds(timeStep);
+    delayMicroseconds(int(double(timeStep)/2.0));
   }
 }
 
@@ -56,9 +56,9 @@ void stepper::drive_s(int angle, float _rpm, int _touchPin)
   for (int i = 0; i < iteration; i ++) {
     if (!(digitalRead(_touchPin))) {
       digitalWrite(stepPin, HIGH);
-      delayMicroseconds(timeStep);
+      delayMicroseconds(int(double(timeStep)/2.0));
       digitalWrite(stepPin, LOW);
-      delayMicroseconds(timeStep);
+      delayMicroseconds(int(double(timeStep)/2.0));
     }
   }
 }
@@ -79,15 +79,16 @@ void stepper::drive(int angle)
   iteration = int(float(stepsPerRevolution) * float(abs(angle)) / 360.0);
   for (int i = 0; i < iteration * 2; i ++) {
     digitalWrite(stepPin, LOW);
-    delayMicroseconds(timeStep);
+    delayMicroseconds(int(double(timeStep)/2.0));
   }
 }
 
 void stepper::calibrate()
-{
+{ // Calibration is required for fast stepper motor response
   float calibrationSpeed = 36;
   float targetTime = calibrationSpeed / 360.0 * pow(10, 6);
-
+  int counter = 0;
+  
   firstTick = micros();
   drive(calibrationSpeed);
   secondTick = micros();
@@ -102,7 +103,7 @@ void stepper::calibrate()
 
   velocity_coefficient[2] = velocity_coefficient[1];
   velocity_coefficient[1] /= 2.0;
-  while (true) {
+  while (counter < ITERATION_LIMIT) {
     firstTick = micros();
     drive(calibrationSpeed);
     secondTick = micros();
@@ -112,5 +113,6 @@ void stepper::calibrate()
       break;
     }
     velocity_coefficient[1] = ( ( ((targetTime - interval[1])) * ((targetTime - interval[2])) ) / ( ((interval[0] - interval[1])) * ((interval[0] - interval[2])) ) ) * velocity_coefficient[0] + ( ( ((targetTime - interval[0])) * ((targetTime - interval[2])) ) / ( ((interval[1] - interval[0])) * ((interval[1] - interval[2])) ) ) * velocity_coefficient[1] + ( ( ((targetTime - interval[0])) * ((targetTime - interval[1])) ) / ( ((interval[2] - interval[0])) * ((interval[2] - interval[1])) ) ) * velocity_coefficient[2];
+    counter ++;
   }
 }

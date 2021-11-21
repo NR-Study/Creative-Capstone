@@ -31,8 +31,10 @@
       : calibrate() and drive() overload is set to private
     > v 1.5.0 (Nov. 14, 2021)
       : Added drive_s() which utilizes the push button to check the initial stepper position
-      
-      
+    > v 1.6.1 (Nov. 21, 2021)
+      : Fixed the time accuracy problem, the time step calculated in the drive() has been applied as two microsecond full delays, changed to two microsecond half delays
+      : Tightened the ALLOWED_TIME_ERROR
+      : Added ITERATION_LIMIT to set the maximum interation at the calibration()
 */
 // file: stepper.h
 #ifndef stepper_h
@@ -40,7 +42,8 @@
 #include "Arduino.h"
 
 #define DEBUG true
-#define ALLOWED_TIME_ERROR 100 // microsecond
+#define ALLOWED_TIME_ERROR 50 // microsecond
+#define ITERATION_LIMIT 20 // cycle
 
 class stepper
 {
@@ -61,7 +64,7 @@ class stepper
   public:
     stepper(const int _dirPin, const int _stepPin, int _stepsPerRevolution);
     ~stepper();
-
+    
     void begin();
     void drive(int angle, float _rpm);
     void drive_s(int angle, float _rpm, int _touchPin);
