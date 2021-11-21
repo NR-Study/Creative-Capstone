@@ -35,8 +35,8 @@
       
 */
 // file: stepper.h
-#ifndef Morse_h
-#define Morse_h
+#ifndef stepper_h
+#define stepper_h
 #include "Arduino.h"
 
 #define DEBUG true
