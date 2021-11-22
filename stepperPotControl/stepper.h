@@ -35,6 +35,8 @@
       : Fixed the time accuracy problem, the time step calculated in the drive() has been applied as two microsecond full delays, changed to two microsecond half delays
       : Tightened the ALLOWED_TIME_ERROR
       : Added ITERATION_LIMIT to set the maximum interation at the calibration()
+    > v 1.7.0 (Nov. 22, 2021)
+      : Changed all the digital read/write functions to direct pin manipulation to reduce the control time
 */
 // file: stepper.h
 #ifndef stepper_h
@@ -42,7 +44,7 @@
 #include "Arduino.h"
 
 #define DEBUG true
-#define ALLOWED_TIME_ERROR 50 // microsecond
+#define ALLOWED_TIME_ERROR 35 // microsecond
 #define ITERATION_LIMIT 20 // cycle
 
 class stepper

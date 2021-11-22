@@ -22,64 +22,62 @@ stepper::~stepper()
 
 void stepper::drive(int angle, float _rpm)
 {
-  timeStep = int(60.0 / (float(stepsPerRevolution) * pow(10, -6) * _rpm * velocity_coefficient[1])); // RPM to time step
-
+  timeStep = int((60.0 / (float(stepsPerRevolution) * pow(10, -6) * _rpm * velocity_coefficient[1]))/2.0); // RPM to time step
+  byte comm = B00000000;
   if (angle > 0) {
-    digitalWrite(dirPin, HIGH);
-  } else {
-    digitalWrite(dirPin, LOW);
+    comm = 1<<dirPin | comm;
   }
 
   iteration = int(float(stepsPerRevolution) * float(abs(angle)) / 360.0);
 
   for (int i = 0; i < iteration; i ++) {
-    digitalWrite(stepPin, HIGH);
-    delayMicroseconds(int(double(timeStep)/2.0));
-    digitalWrite(stepPin, LOW);
-    delayMicroseconds(int(double(timeStep)/2.0));
+    PORTD = 1<<stepPin | comm;
+    delayMicroseconds(timeStep);
+    PORTD = comm;
+    delayMicroseconds(timeStep);
   }
 }
 
 void stepper::drive_s(int angle, float _rpm, int _touchPin)
 {
-  timeStep = int(60.0 / (float(stepsPerRevolution) * pow(10, -6) * _rpm * velocity_coefficient[1])); // RPM to time step
-  pinMode(_touchPin, INPUT);
+  timeStep = int((60.0 / (float(stepsPerRevolution) * pow(10, -6) * _rpm * velocity_coefficient[1]))/2.0); // RPM to time step
+  byte comm = B00000000;
+  DDRD = ~((~((1<<dirPin | 1<<stepPin))) | 1<<_touchPin) & (B11111100); // Setup an extra pin configuration for tactile
   
   if (angle > 0) {
-    digitalWrite(dirPin, HIGH);
-  } else {
-    digitalWrite(dirPin, LOW);
+    comm = 1<<dirPin | comm;
   }
 
   iteration = int(float(stepsPerRevolution) * float(abs(angle)) / 360.0);
 
   for (int i = 0; i < iteration; i ++) {
-    if (!(digitalRead(_touchPin))) {
-      digitalWrite(stepPin, HIGH);
-      delayMicroseconds(int(double(timeStep)/2.0));
-      digitalWrite(stepPin, LOW);
-      delayMicroseconds(int(double(timeStep)/2.0));
+    if (!((PIND & 1<<_touchPin)>>_touchPin)) {
+      PORTD = 1<<stepPin | comm;
+      delayMicroseconds(timeStep);
+      PORTD = comm;
+      delayMicroseconds(timeStep);
     }
   }
 }
 
 void stepper::begin()
 {
-  pinMode(dirPin, OUTPUT);
-  pinMode(stepPin, OUTPUT);
+  DDRD = (1<<dirPin | 1<<stepPin) & (B11111100);
   calibrate();
 }
 
 void stepper::drive(int angle)
 {
-  timeStep = int(60.0 / (float(stepsPerRevolution) * pow(10, -6) * 60 * velocity_coefficient[1])); // RPM to time step (Calibrate to 60 RPM)
-
-  digitalWrite(dirPin, LOW);
-
+  timeStep = int((60.0 / (float(stepsPerRevolution) * pow(10, -6) * 60 * velocity_coefficient[1]))/2.0); // RPM to time step
+  byte comm = B00000000;
+  if (angle > 0) {
+    comm = 1<<dirPin | comm;
+  }
+  
   iteration = int(float(stepsPerRevolution) * float(abs(angle)) / 360.0);
   for (int i = 0; i < iteration * 2; i ++) {
-    digitalWrite(stepPin, LOW);
-    delayMicroseconds(int(double(timeStep)/2.0));
+    PORTD = comm;
+    delayMicroseconds(timeStep);
   }
 }
 
