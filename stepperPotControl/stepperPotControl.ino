@@ -22,7 +22,7 @@ int16_t angle = 0;
 void loop() {
     // Get sensor value
     sensorValue = analogRead(analogInPin);
-    outputValue = map(sensorValue, 0, 1023, 0, 255);
+    outputValue = map(sensorValue, 0, 1023, 100, 250);
     
     analogWrite(9, outputValue);
         
