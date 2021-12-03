@@ -1,6 +1,11 @@
 # include "stepper.h"
+# include <Servo.h>
+#define MIN_PULSE_LENGTH 1000 // Minimum pulse length in µs
+#define MAX_PULSE_LENGTH 2000 // Maximum pulse length in µs
+
 // Direction Pin, Step Pin, Steps Per Revolution
 stepper motor(2, 3, 800);
+Servo motA;
 
 // User Variables
 const uint8_t analogInPin = A5;
@@ -11,7 +16,14 @@ int16_t command = 0;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(9, OUTPUT);
+  
+  motA.attach(9, MIN_PULSE_LENGTH, MAX_PULSE_LENGTH);
+  
+  motA.writeMicroseconds(MAX_PULSE_LENGTH);
+  delay(1000);
+  motA.writeMicroseconds(MIN_PULSE_LENGTH);
+  delay(1000);
+  
   motor.begin(); // Initiate stepper motor
   motor.drive_s(-360, 60, 7); // Spin Angle, Step Time (= timeStep)
 }
@@ -22,9 +34,9 @@ int16_t angle = 0;
 void loop() {
     // Get sensor value
     sensorValue = analogRead(analogInPin);
-    outputValue = map(sensorValue, 0, 1023, 100, 250);
+    outputValue = map(sensorValue, 0, 1023, 1000, 2000);
     
-    analogWrite(9, outputValue);
+    motA.writeMicroseconds(outputValue);
         
     if (Serial.available() > 0)
     {
