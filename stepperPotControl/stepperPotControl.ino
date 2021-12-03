@@ -34,14 +34,14 @@ int16_t angle = 0;
 void loop() {
     // Get sensor value
     sensorValue = analogRead(analogInPin);
-    outputValue = map(sensorValue, 0, 1023, 1000, 2000);
-    
+    outputValue = map(sensorValue, 0, 1023, 1000, 1225);
+    Serial.println(outputValue);
     motA.writeMicroseconds(outputValue);
         
     if (Serial.available() > 0)
     {
       command = Serial.parseInt();
-      command = map(command, 0, 100, 0, 80);
+      command = map(command, 0, 100, 0, 64);
       Serial.parseInt();
       Serial.flush();
       // Check value change
